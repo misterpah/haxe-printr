@@ -1,13 +1,16 @@
 class Printr
 	{
-	static var a:String;
+	static var private_var_a:String;
+	public static var public_var_b:String;
+	
 	static public function print_r(object:Dynamic,display:Bool = true)
 		{
+		private_var_a = "haha";
+		public_var_b = "acciently!";
 		var output:String = "";
 		var obj_class = Type.getClass(object);
 		var obj_type = Type.typeof(object);
 		var obj_name = Type.getClassName(Type.getClass(object));
-		
 		if (Std.is(object,Int))
 			{
 			output += "(Int) " + object;
@@ -32,9 +35,16 @@ class Printr
 		else if (obj_type == TObject)
 			{
 			output += "(Object)\n\t" + Type.getClassName(object);
-			output += "\n\t => (Function) "+Type.getClassFields(object);
-			}					
-		
+			var fields = Type.getClassFields(object);
+			for (each in fields)
+				{
+				output += "\n\t => "+each +" " + print_r(Reflect.getProperty(object,each),false) ;
+				}
+			}
+		else if (object == null)
+			{
+			output += "(null)";
+			}
 		if (display == true)
 			{
 			trace(output);
