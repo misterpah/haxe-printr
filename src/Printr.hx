@@ -1,12 +1,7 @@
 class Printr
 	{
-	static var private_var_a:String;
-	public static var public_var_b:String;
-	
 	static public function print_r(object:Dynamic,display:Bool = true)
 		{
-		private_var_a = "haha";
-		public_var_b = "acciently!";
 		var output:String = "";
 		var obj_class = Type.getClass(object);
 		var obj_type = Type.typeof(object);
