@@ -1,8 +1,7 @@
 class Printr
 	{
-	var q:Int;
-	
-	static public function print_r(object:Dynamic)
+	static var a:String;
+	static public function print_r(object:Dynamic,display:Bool = true)
 		{
 		var output:String = "";
 		var obj_class = Type.getClass(object);
@@ -11,50 +10,87 @@ class Printr
 		
 		if (Std.is(object,Int))
 			{
-			trace("(Int) " + object);
+			output += "(Int) " + object;
 			}
 		else if(Std.is(object,String))
 			{
-			trace("("+obj_name+") " + object);
+			output +="("+obj_name+") " + object;
 			}
 		else if(Std.is(object,Float))
 			{
-			trace("("+obj_name+") " + object);
+			output +="("+obj_name+") " + object;
 			}
 		else if(Std.is(object,Array))
 			{
-			trace("("+obj_name+") = " +object);
-			trace("   {");
-			for (each in 0...object.length)
-				{
-				var each_obj_name = Type.getClassName(Type.getClass(object[each]));
-				if ( each_obj_name == "Array")
-					{
-					print_r(object[each]);
-					}
-				else
-					{
-					if (each_obj_name == null)
-						{
-						trace( "    ("+ Type.typeof(object[each]) +") "+object[each]);
-						}
-					else
-						{
-						trace( "    ("+ each_obj_name +") "+object[each]);
-						}
-					}
-				}
-			trace("   }");
+			// array is complex. need a function
+			output += display_array(object);
 			}
 		else if (obj_type == TFunction)
 			{
-			trace("(Function) " + object);
+			output += "(Function) " + object;
 			}
 		else if (obj_type == TObject)
 			{
-			trace("(Object) " + Type.getClassName(object));
-			trace(" --> (internal Functions) "+Type.getClassFields(object));
+			output += "(Object)\n\t" + Type.getClassName(object);
+			output += "\n\t => (Function) "+Type.getClassFields(object);
 			}					
+		
+		if (display == true)
+			{
+			trace(output);
+			}
+		return output;
+		}
+		
+	private static function display_array(object:Dynamic,display_type:Bool=true,level:Int=1)
+		{
+		var obj_class = Type.getClass(object);
+		var obj_type = Type.typeof(object);
+		var obj_name = Type.getClassName(Type.getClass(object));
+		
+		var output = "";
+		
+		var prefix = generate_tab(level);
+		if (display_type == true)
+			{
+			output +="("+obj_name+")\n" +object;
+			output +="\n"+prefix+"{";
+			}
+		for (each in 0...object.length)
+			{
+			var each_obj_name = Type.getClassName(Type.getClass(object[each]));
+			if (each_obj_name != null)
+				{
+				output += "\n"+prefix+"["+each+"] => ("+ each_obj_name +") "+object[each];
+				}
+			else
+				{
+				output += "\n"+prefix+"["+each+"] => "+ print_r(object[each],false);
+				}
+			
+			if ( each_obj_name == "Array")
+				{
+				level += 1;
+				output += "\n"+generate_tab(level)+"{"+prefix + display_array(object[each],false,level);
+				output += "\n"+generate_tab(level)+"}";
+				}			
+			
+			}
+		if (display_type == true)
+			{
+			output +="\n"+prefix+"}";
+			}
+		return output;
+		}
+	
+	private static function	generate_tab(num:Int)
+		{
+		var ret = "";
+		for (each in 0...num)
+			{
+			ret += "\t";
+			}
+		return ret;
 		}
 		
 		
